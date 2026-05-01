@@ -9,9 +9,9 @@ scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis
 #creds = Credentials.from_service_account_file('credentials.json', scopes=scope)
 # 修正後のコード（あきらさんのフォルダ構成に合わせました）
 #creds = Credentials.from_service_account_file(
-    r'c:\Users\akira\OneDrive\ドキュメント\Python1\credentials.json', 
-    scopes=scope
-)
+   # r'c:\Users\akira\OneDrive\ドキュメント\Python1\credentials.json', 
+   # scopes=scope
+#)
 # クラウド公開用（Secretsを使用）
 creds_dict = st.secrets["gcp_service_account"]
 creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
