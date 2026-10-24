@@ -24,7 +24,7 @@ st.title('ぱそすまサロン 活動報告')
 if MODE == 'demo':
     st.info('お試し版：Googleには送信しません。架空の相談で操作を確認してください。')
 else:
-    st.warning('テスト運用：テスト専用のGoogleスプレッドシートへ保存します。')
+    st.warning('Google保存のテスト運用：「テスト_」で始まる別タブへ保存します。元の報告タブは変更しません。')
     pin = str(setting('access_code', ''))
     if not pin or not setting('spreadsheet_id') or not setting('gcp_service_account'):
         st.error('管理者がテスト用の保存先・認証情報・利用コードを設定してください。')
@@ -122,7 +122,7 @@ def save_pending():
                 raise ConnectionError('simulated timeout after save')
         else:
             GoogleRepository(dict(setting('gcp_service_account')), setting('spreadsheet_id'),
-                             sheet_prefix=str(setting('sheet_prefix', 'テスト_'))).save(record)
+                             sheet_prefix='テスト_').save(record)
     except Exception as exc:
         # Do not display credentials, user data or raw provider response bodies.
         from report_core import SchemaError

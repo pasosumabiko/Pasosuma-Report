@@ -56,7 +56,9 @@ def schema_upgrade(existing, has_other_rows=False):
     raise SchemaError('保存先の列見出しが想定と異なります。既存データ保護のため保存を止めました。管理者が列順を確認してください。')
 
 class GoogleRepository:
-    def __init__(self, credentials, spreadsheet_id, sheet_prefix=''):
+    def __init__(self, credentials, spreadsheet_id, sheet_prefix='テスト_'):
+        if sheet_prefix != 'テスト_':
+            raise ValueError('このテスト版は「テスト_」で始まるタブにだけ保存できます。')
         import gspread
         from google.oauth2.service_account import Credentials
         self.gspread = gspread
@@ -66,10 +68,12 @@ class GoogleRepository:
         self.book = gspread.authorize(creds).open_by_key(spreadsheet_id)
 
     def save(self, record):
-        # This lock serializes check+append in this process. The test deployment
-        # must use a dedicated spreadsheet and a single app process.
+        # Serialize this app's writes. Original monthly tabs are never targeted.
         with LOCK:
-            title = getattr(self, 'sheet_prefix', '') + record['開催日'][:7] + '_' + record['拠点']
+            prefix = getattr(self, 'sheet_prefix', 'テスト_')
+            if prefix != 'テスト_':
+                raise ValueError('元のタブへの保存は、このテスト版ではできません。')
+            title = prefix + record['開催日'][:7] + '_' + record['拠点']
             try:
                 ws = self.book.worksheet(title)
             except self.gspread.exceptions.WorksheetNotFound:
