@@ -79,7 +79,11 @@ class GoogleRepository:
             except self.gspread.exceptions.WorksheetNotFound:
                 ws = self.book.add_worksheet(title=title, rows=100, cols=len(HEADER))
             existing = ws.row_values(1)
-            target = schema_upgrade(existing, has_other_rows=bool(ws.get_all_values()) if not existing else False)
+            # Some Sheets responses contain padded empty rows. Their presence
+            # alone is not evidence of existing data.
+            has_values = any(any(str(value).strip() for value in row)
+                             for row in ws.get_all_values()) if not existing else False
+            target = schema_upgrade(existing, has_other_rows=has_values)
             if target != existing:
                 # Exact old ten-column header is safe to extend; never overwrite
                 # unknown legacy layouts, even if their column count is smaller.
