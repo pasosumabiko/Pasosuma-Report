@@ -1,5 +1,4 @@
 import os
-import hmac
 from uuid import uuid4
 import streamlit as st
 from report_core import LOCATIONS, HEADER, GoogleRepository, make_record, now_jst
@@ -25,20 +24,8 @@ if MODE == 'demo':
     st.info('お試し版：Googleには送信しません。架空の相談で操作を確認してください。')
 else:
     st.warning('Google保存のテスト運用：「テスト_」で始まる別タブへ保存します。元の報告タブは変更しません。')
-    pin = str(setting('access_code', ''))
-    if not pin or not setting('spreadsheet_id') or not setting('gcp_service_account'):
-        st.error('管理者がテスト用の保存先・認証情報・利用コードを設定してください。')
-        st.stop()
-    if not st.session_state.get('authorized'):
-        with st.form('login'):
-            code = st.text_input('利用コード', type='password')
-            login = st.form_submit_button('利用する')
-        if login:
-            if hmac.compare_digest(code.encode('utf-8'), pin.encode('utf-8')):
-                st.session_state.authorized = True
-                st.rerun()
-            else:
-                st.error('利用コードを確認してください。')
+    if not setting('spreadsheet_id') or not setting('gcp_service_account'):
+        st.error('管理者がテスト用の保存先・認証情報を設定してください。')
         st.stop()
 
 DEFAULTS = {'q_known': '未確認', 'q_pc': False, 'q_sp': False, 'q_other': False,
