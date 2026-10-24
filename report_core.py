@@ -19,7 +19,7 @@ def validate(common, data):
     if common.get('location') not in LOCATIONS:
         errors.append('会場を選んでください。')
     if not common.get('reporter', '').strip():
-        errors.append('報告者名を入力してください。')
+        errors.append('担当サポーター名を入力してください。')
     if not common.get('date'):
         errors.append('開催日を選んでください。')
     if not data.get('types'):

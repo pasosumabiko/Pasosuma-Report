@@ -65,19 +65,20 @@ if pending:
 
 st.subheader('１　今回の開催情報')
 if common:
-    st.success(f"{common['date']:%Y年%m月%d日} ／ {common['location']} ／ 報告者：{common['reporter']}")
-    st.caption('続けて報告するときも、この開催情報を使います。')
+    st.success(f"{common['date']:%Y年%m月%d日} ／ {common['location']} ／ 担当サポーター：{common['reporter']}")
+    st.caption('このスマホでご自身が担当した相談を続けて報告できます。開催情報と担当サポーター名を引き継ぎます。')
 with st.expander('開催情報を変更する' if common else '最初に開催情報を設定してください', expanded=not bool(common)):
     with st.form('event_form'):
         loc = st.selectbox('会場', LOCATIONS, index=LOCATIONS.index(common['location']) if common else None,
                            placeholder='会場を選択', disabled=bool(pending))
-        reporter = st.text_input('報告者名', value=common['reporter'] if common else '', disabled=bool(pending))
+        reporter = st.text_input('担当サポーター名', value=common['reporter'] if common else '', disabled=bool(pending),
+                                 help='このスマホを使うサポーターご本人の名前を入力してください。ご自身が担当した相談を報告します。')
         event_date = st.date_input('開催日', value=common['date'] if common else now_jst().date(),
                                    format='YYYY/MM/DD', disabled=bool(pending))
         apply = st.form_submit_button('この開催情報で入力する', disabled=bool(pending))
     if apply:
         if not loc or not reporter.strip() or not event_date:
-            st.error('会場・報告者名・開催日を設定してください。')
+            st.error('会場・担当サポーター名・開催日を設定してください。')
         else:
             st.session_state.common = {'location': loc, 'reporter': reporter.strip(), 'date': event_date}
             st.rerun()
