@@ -56,10 +56,11 @@ def schema_upgrade(existing, has_other_rows=False):
     raise SchemaError('保存先の列見出しが想定と異なります。既存データ保護のため保存を止めました。管理者が列順を確認してください。')
 
 class GoogleRepository:
-    def __init__(self, credentials, spreadsheet_id):
+    def __init__(self, credentials, spreadsheet_id, sheet_prefix=''):
         import gspread
         from google.oauth2.service_account import Credentials
         self.gspread = gspread
+        self.sheet_prefix = sheet_prefix
         creds = Credentials.from_service_account_info(
             credentials, scopes=['https://www.googleapis.com/auth/spreadsheets'])
         self.book = gspread.authorize(creds).open_by_key(spreadsheet_id)
@@ -68,7 +69,7 @@ class GoogleRepository:
         # This lock serializes check+append in this process. The test deployment
         # must use a dedicated spreadsheet and a single app process.
         with LOCK:
-            title = record['開催日'][:7] + '_' + record['拠点']
+            title = getattr(self, 'sheet_prefix', '') + record['開催日'][:7] + '_' + record['拠点']
             try:
                 ws = self.book.worksheet(title)
             except self.gspread.exceptions.WorksheetNotFound:

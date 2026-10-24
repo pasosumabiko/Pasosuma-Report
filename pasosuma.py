@@ -121,7 +121,8 @@ def save_pending():
                 st.session_state['_reset_simulation_next_run'] = True
                 raise ConnectionError('simulated timeout after save')
         else:
-            GoogleRepository(dict(setting('gcp_service_account')), setting('spreadsheet_id')).save(record)
+            GoogleRepository(dict(setting('gcp_service_account')), setting('spreadsheet_id'),
+                             sheet_prefix=str(setting('sheet_prefix', 'テスト_'))).save(record)
     except Exception as exc:
         # Do not display credentials, user data or raw provider response bodies.
         from report_core import SchemaError
